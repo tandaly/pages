@@ -1,0 +1,119 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<title>销售单</title>
+<link href="css/common.css?ver=null" rel="stylesheet" type="text/css">
+<link href="css/blue/ui.css?ver=null" rel="stylesheet" type="text/css" id="uiFile">
+<link href="css/base/jquery.ui.core.css?ver=null" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.theme.css?ver=null" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.datepicker.css?ver=null" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.autocomplete.css?ver=null" rel="stylesheet" type="text/css">
+<link href="css/base/ui.jqgrid.css?ver=null" rel="stylesheet" type="text/css">
+<script src="js/jquery.js?ver=null"></script>
+<script src="js/json2.js?ver=null"></script>
+<script src="js/common.js"></script>
+<script src="js/jquery.combo.js"></script>
+<script src="js/grid/i18n/grid.locale-cn.js?ver=null"></script>
+<script src="js/grid/grid.base.js?ver=null"></script>
+<script src="js/grid/grid.custom.js?ver=null"></script>
+<script src="js/grid/jquery.fmatter.js?ver=null"></script>
+<script src="js/grid/grid.common.js?ver=null"></script>
+<script src="js/grid/grid.celledit.js?ver=null"></script>
+<script src="js/ui/jquery.ui.core.js?ver=null"></script>
+<script src="js/ui/jquery.ui.widget.js?ver=null"></script>
+<script src="js/ui/jquery.ui.datepicker.js?ver=null"></script>
+<script src="js/ui/i18n/jquery.ui.datepicker-zh-CN.js?ver=null"></script>
+<script src="js/plugin/lhgdialog.js?self=true&skin=blue&ver=null"></script>
+<script src="js/ui/jquery.validate.js?ver=null"></script>
+<script src="js/ui/jquery-powerFloat-min.js?ver=null"></script>
+<link href="css/bills.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+<div class="wrapper">
+  <div class="mod-toolbar-top mr0 cf dn" id="toolTop"></div>
+  <div class="bills" style="width:1022px;">
+    <div class="con-header">
+      <dl class="cf">
+        <dd class="p30">
+          <label>销货单位:</label>
+          <span class="ui-combo-wrap" id="customer">
+          <input type="text" name="" class="input-txt" autocomplete="off" value="" data-ref="date">
+          <i class="trigger"></i></span></dd>
+        <dd class="p25 tc">
+          <label>单据日期:</label>
+          <input type="text" id="date" class="ui-input ui-datepicker-input" value="">
+        </dd>
+        <dd id="identifier" class="p25 tc">
+          <label>单据编号:</label>
+          <span id="number"></span></dd>
+        <dd id="classes" class="p20 tr">
+          <label class="radio">
+            <input type="radio" name="classes" value="150601">
+            销货</label>
+          <label class="radio">
+            <input type="radio" name="classes" value="150602">
+            退货</label>
+        </dd>
+      </dl>
+    </div>
+    <div class="grid-wrap">
+      <table id="grid">
+      </table>
+      <div id="page"></div>
+    </div>
+    <div class="con-footer cf">
+      <div class="mb10">
+      	<div class="label-wrap">
+        	<label>备注:</label>
+        </div>
+        <div class="ctn-wrap">
+        	<input type="text" id="note" class="ui-input" data-ref="discount" style="width:100%; margin:0 -6px; ">
+        </div>
+      </div>
+      <p>
+        <label>折扣率:</label>
+        <input type="text" id="discountRate" class="ui-input" data-ref="deduction">%
+        <span>
+        <label>折扣额:</label>
+        <input type="text" id="deduction" class="ui-input" data-ref="payment">
+        </span>
+        <span>
+        <label>折后金额:</label>
+        <input type="text" id="discount" class="ui-input ui-input-dis" data-ref="discountRate" disabled>
+        </span></p>
+      <p>
+        <label id="paymentTxt">本次收款:</label>
+        <input type="text" id="payment" class="ui-input">&emsp;
+        <span id="accountWrap" class="dn">
+		<label>结算账户:</label>
+          <span class="ui-combo-wrap" id="account" style="padding:0;">
+          <input type="text" class="input-txt" autocomplete="off">
+          <i class="trigger"></i></span><a id="accountInfo" class="ui-icon ui-icon-folder-open" style="display:none;"></a>
+        </span>
+        <span>
+        <label>本次欠款:</label>
+        <input type="text" id="arrears" class="ui-input ui-input-dis" disabled>
+        </span>
+        <span class="dn">
+        <label>累计欠款:</label>
+        <input type="text" id="totalArrears" class="ui-input ui-input-dis" disabled>
+        </span></p>
+    </div>
+    <div class="tr" id="toolBottom"></div>
+    <div id="mark"></div>
+  </div>
+  
+  <div id="initCombo" class="dn">
+    <input type="text" class="textbox goodsAuto" name="goods" autocomplete="off">
+    <input type="text" class="textbox storageAuto" name="storage" autocomplete="off">
+  </div>
+  <div id="storageBox" class="shadow target_box dn">
+  </div>
+</div>
+<script src="js/bs/sales.js"></script>
+</body>
+</html>

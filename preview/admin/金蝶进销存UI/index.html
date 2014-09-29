@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="renderer" content="webkit|ie-comp|ie-stand">
+<title>在线进销存</title>
+<link href="css/common.css" rel="stylesheet" type="text/css">
+<link href="css/ui.css" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.core.css" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.theme.css" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.datepicker.css" rel="stylesheet" type="text/css">
+<link href="css/base/jquery.ui.autocomplete.css" rel="stylesheet" type="text/css">
+<link href="css/base/ui.jqgrid.css" rel="stylesheet" type="text/css">
+<script src="js/jquery.js"></script>
+<script src="js/json2.js"></script>
+<script src="js/common.js"></script>
+<script src="js/jquery.combo.js"></script>
+<script src="js/grid/i18n/grid.locale-cn.js"></script>
+<script src="js/grid/grid.base.js"></script>
+<script src="js/grid/grid.custom.js"></script>
+<script src="js/grid/jquery.fmatter.js"></script>
+<script src="js/grid/grid.common.js"></script>
+<script src="js/grid/grid.celledit.js"></script>
+<script src="js/ui/jquery.ui.core.js"></script>
+<script src="js/ui/jquery.ui.widget.js"></script>
+<script src="js/ui/jquery.ui.datepicker.js"></script>
+<script src="js/ui/i18n/jquery.ui.datepicker-zh-CN.js"></script>
+<script src="js/plugin/lhgdialog.js?self=true?v=20131218"></script>
+<script src="js/ui/jquery.validate.js"></script>
+<script src="js/ui/jquery-powerFloat-min.js"></script>
+<link href="css/default.css" rel="stylesheet" type="text/css">
+<script src="js/ui/base.js?v=20131218"></script>
+<script src="js/ui/jquery.tab.js"></script>
+<script src="js/ui/jquery.menu.js"></script>
+<script>
+var CONFIG = {
+	DEFAULT_PAGE: true,
+	SERVICE_URL: 'http://online-gd.youshang.com/onlinegd/'
+};
+//系统参数控制
+var SYSTEM = {
+	version: 1,
+	curDate: '1387689566393',  //系统当前日期
+	DBID: '793892194292', //账套ID
+	serviceType: '12', //账套类型，13：表示收费服务，12：表示免费服务
+	realName: 'loyinonline', //真实姓名
+	userName: 'loyinonline@baidu', //用户名
+	companyName: '北京龙影软件技术有限公司',	//公司名称
+	startDate: '2013-12-22', //启用日期
+	currency: 'RMB',	//本位币
+	qtyPlaces: '2',	//数量小数位
+	pricePlaces: '2',	//单价小数位
+	amountPlaces: '2', //金额小数位
+	valMethods:	'movingAverage',	//存货计价方法
+	invEntryCount: '300',//试用版单据分录数
+	rights: {},//权限列表
+	billRequiredCheck: 0, //是否启用单据审核功能  1：是、0：否
+	requiredCheckStore: 1, //是否检查负库存  1：是、0：否
+	requiredMoney: 1, //是否启用资金功能  1：是、0：否
+	taxRequiredCheck: 0,
+	taxRequiredInput: 17,
+	isAdmin:true, //是否管理员
+	siExpired:false,//是否过期
+	siType:2, //服务版本，1表示基础版，2表示标准版
+	siVersion:3, //1表示试用、2表示免费（百度版）、3表示收费，4表示体验版
+	Mobile:"",//当前用户手机号码
+	isMobile:false,//是否验证手机
+	isshortUser:true,//是否联邦用户
+	shortName:"baidu",//shortName
+	isOpen:false//是否弹出手机验证
+};
+SYSTEM.servicePro = 'forscm3';
+if(SYSTEM.siType === 2) {
+	SYSTEM.servicePro = 'forbscm3';
+};
+var cacheList = {};	//缓存列表查询
+$(function(){
+	/*
+	 * 判断IE6，提示使用高级版本
+	 */
+	if(Public.isIE6) {
+		 var Oldbrowser = {
+			 init: function(){
+				 this.addDom();
+			 },
+			 addDom: function() {
+			 	var html = $('<div id="browser">您使用的浏览器版本过低，影响网页性能，建议您换用<a href="http://www.google.cn/chrome/intl/zh-CN/landing_chrome.html" target="_blank">谷歌</a>、<a href="http://download.microsoft.com/download/4/C/A/4CA9248C-C09D-43D3-B627-76B0F6EBCD5E/IE9-Windows7-x86-chs.exe" target="_blank">IE9</a>、或<a href=http://firefox.com.cn/" target="_blank">火狐浏览器</a>，以便更好的使用！<a id="bClose" title="关闭">x</a></div>').insertBefore('#container').slideDown(500); 
+			 	this._colse();
+			 },
+			 _colse: function() {
+				  $('#bClose').click(function(){
+						 $('#browser').remove();
+				 });
+			 }
+		 };
+		 Oldbrowser.init();
+	};
+})
+</script>
+</head>
+<body>
+<div id="container" class="cf">
+  <div id="col-side">
+    <ul id="nav">
+      <li class="item item-purchase"> <a href="javascript:void(0);" class="purchase main-nav">购货<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap">
+          <ul class="sub-nav">
+            <li><a href="invPu.do?action=initPur" rel="pageTab" tabid="purchase-purchase" data-right="PU_ADD">购货单</a></li>
+            <li><a href="invPu.do?action=initPurList" rel="pageTab" tabid="purchase-salesList" data-right="PU_QUERY">购货记录</a></li>
+          </ul>
+          <b></b> </div>
+      </li>
+      <li class="item item-sales"> <a href="javascript:void(0);" class="sales main-nav">销货<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap">
+          <ul class="sub-nav">
+            <li><a href="sales.html" rel="pageTab" tabid="sales-sales" data-right="SA_ADD">销货单</a></li>
+            <li><a href="SaleList.html" rel="pageTab" tabid="sales-salesList" data-right="SA_QUERY">销货记录</a></li>
+          </ul>
+          <b></b> </div>
+      </li>
+      <li class="item item-storage"> <a href="javascript:void(0);" class="storage main-nav">仓库<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap">
+          <ul class="sub-nav">
+            <li><a href="invTf.do?action=initTf" rel="pageTab" tabid="storage-transfers" data-right="TF_ADD">调拨单</a></li>
+            <li><a href="invTf.do?action=initTfList" rel="pageTab" tabid="storage-transfersList" data-right="TF_QUERY">调拨记录</a></li>
+            <li><a href="storage/inventory.jsp" rel="pageTab" tabid="storage-inventory" data-right="PD_GENPD">盘点</a></li>
+            <li><a href="invOi.do?action=initOi&type=in" rel="pageTab" tabid="storage-otherWarehouse" data-right="IO_ADD">其他入库</a></li>
+            <li><a href="invOi.do?action=initOiList&type=in" rel="pageTab" tabid="storage-otherWarehouseList" data-right="IO_QUERY">其他入库记录</a></li>
+            <li><a href="invOi.do?action=initOi&type=out" rel="pageTab" tabid="storage-otherOutbound" data-right="OO_ADD">其他出库</a></li>
+            <li><a href="invOi.do?action=initOiList&type=out" rel="pageTab" tabid="storage-otherOutboundList" data-right="OO_QUERY">其他出库记录</a></li>
+            <li><a href="invOi.do?action=initOi&type=cbtz" rel="pageTab" tabid="storage-adjustment" data-right="CADJ_ADD">成本调整单</a></li>
+            <li><a href="invOi.do?action=initOiList&type=cbtz" rel="pageTab" tabid="storage-adjustmentList" data-right="CADJ_QUERY">成本调整记录</a></li>
+          </ul>
+          <b></b> </div>
+      </li>           
+      <li class="item item-money"> <a href="javascript:void(0);" class="money main-nav">资金<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap">
+          <ul class="sub-nav">          
+            <li><a href="payment.do?action=initPay" rel="pageTab" tabid="money-payment" data-right="PAYMENT_ADD">付款单</a></li>
+            <li><a href="payment.do?action=initPayList" rel="pageTab" tabid="money-paymentList" data-right="PAYMENT_QUERY">付款记录</a></li>
+            <li><a href="receipt.do?action=initReceipt" rel="pageTab" tabid="money-receipt" data-right="RECEIPT_ADD">收款单</a></li>
+            <li><a href="receipt.do?action=initReceiptList" rel="pageTab" tabid="money-receiptList" data-right="RECEIPT_QUERY">收款记录</a></li>     
+          </ul>
+          <b></b> </div>
+      </li>
+      <li class="item item-onlineStore dn"> <a class="onlineStore main-nav" href="javascript:void(0);">网店<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap" style="top: -62.5px; display: none;">
+          <ul class="sub-nav">
+            <li><a tabid="onlineStore-onlineStoreList" rel="pageTab" href="online-store/onlineStoreList.jsp">基础资料</a></li>
+            <li><a tabid="onlineStore-onlineStoreRelation" rel="pageTab" href="online-store/onlineStoreRelation.jsp">商品对应关系</a></li>
+            <li><a tabid="onlineStore-logisticsList" rel="pageTab" href="online-store/logisticsList.jsp">物流公司</a></li>
+            <li><a tabid="onlineStore-onlineOrderList" rel="pageTab" href="online-store/onlineOrderList.jsp">订单记录</a></li>
+            <li><a tabid="onlineStore-invoicesList" rel="pageTab" href="online-store/invoicesList.jsp">发货单记录</a></li>
+          </ul>
+          <b></b> </div>
+      </li>
+      <li class="item item-report"> <a href="javascript:void(0);" class="report main-nav">报表<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap group-nav report-nav cf">
+          <div class="nav-item nav-pur">
+            <h3>采购报表</h3>
+            <ul class="sub-nav">
+              <li><a href="report/puDetail.do?action=detail" rel="pageTab" tabid="report-puDetail" data-right="PUREOORTDETAIL_QUERY">采购明细表</a></li>
+              <li><a href="report/puDetail.do?action=inv" rel="pageTab" tabid="report-puSummary" data-right="PUREPORTINV_QUERY">采购汇总表（按商品）</a></li>
+              <li><a href="report/puDetail.do?action=supply" rel="pageTab" tabid="report-puSummarySupply" data-right="PUREPORTPUR_QUERY">采购汇总表（按供应商）</a></li>
+			  <li>&nbsp;</li>
+            </ul>
+          </div>
+          <div class="nav-item nav-sales">
+            <h3>销售报表</h3>
+            <ul class="sub-nav">
+              <li><a href="xiaosmxi.html" rel="pageTab" tabid="report-salesDetail" data-right="SAREPORTDETAIL_QUERY">销售明细表</a></li>
+              <li><a href="report/salesDetail.do?action=inv" rel="pageTab" tabid="report-salesSummary" data-right="SAREPORTINV_QUERY">销售汇总表（按商品）</a></li>
+              <li><a href="report/salesDetail.do?action=customer" rel="pageTab" tabid="report-salesSummaryCustomer" data-right="SAREPORTBU_QUERY">销售汇总表（按客户）</a></li>
+              <li><a href="report/contactDebt.do?action=detail" rel="pageTab" tabid="report-contactDebt" data-right="ContactDebtReport_QUERY">往来单位欠款表</a></li>
+            </ul>
+          </div>
+          <div class="nav-item nav-fund">
+            <h3>仓存报表</h3>
+            <ul class="sub-nav">
+              <li><a href="report/invBalance.do?action=detail" rel="pageTab" tabid="report-initialBalance" data-right="InvBalanceReport_QUERY">商品库存余额表</a></li>
+              <li><a href="report/deliverDetail.do?action=detail" rel="pageTab" tabid="report-goodsFlowDetail" data-right="DeliverDetailReport_QUERY">商品收发明细表</a></li>
+              <li><a href="report/deliverSummary.do?action=detail" rel="pageTab" tabid="report-goodsFlowSummary" data-right="DeliverSummaryReport_QUERY">商品收发汇总表</a></li>
+            </ul>
+          </div>
+          
+          <div class="nav-item nav-fund last">
+            <h3>资金报表</h3>
+            <ul class="sub-nav">
+              <li><a href="report/bankBalance.do?action=detail" rel="pageTab" tabid="cash-bank-journal" data-right="SettAcctReport_QUERY">现金银行报表</a></li>
+              <li><a href="report/fundBalance.do?action=detail&type=10" rel="pageTab" tabid="account-pay-detail" data-right="PAYMENTDETAIL_QUERY">应付账款明细表</a></li>
+              <li><a href="report/fundBalance.do?action=detail" rel="pageTab" tabid="account-proceeds-detail" data-right="RECEIPTDETAIL_QUERY">应收账款明细表</a></li>
+              <li><a href="report/customerBalance.do?action=detail" rel="pageTab" tabid="customers-reconciliation" data-right="">客户对账单</a></li>
+            </ul>
+          </div>
+          
+          <b></b> </div>
+      </li>
+      <li class="item item-setting"> <a href="javascript:void(0);" class="setting main-nav">设置<span class="arrow">&gt;</span></a>
+        <div class="sub-nav-wrap cf group-nav setting-nav">
+          <div class="nav-item">
+            <h3>基础资料</h3>
+            <ul class="sub-nav">
+              <li><a href="settings/customer-list.jsp" rel="pageTab" tabid="setting-customerList" data-right="BU_QUERY">客户管理</a></li>
+              <li><a href="settings/vendor-list.jsp" rel="pageTab" tabid="setting-vendorList" data-right="PUR_QUERY">供应商管理</a></li>
+              <li><a href="settings/goods-list.jsp" rel="pageTab" tabid="setting-goodsList" data-right="INVENTORY_QUERY">商品管理</a></li>
+              <li><a href="settings/storage-list.jsp" rel="pageTab" tabid="setting-storageList" data-right="INVLOCTION_QUERY">仓库管理</a></li>              
+              <li><a href="settings/settlement-account.jsp" rel="pageTab" tabid="setting-settlementaccount" data-right="SettAcct_QUERY">账户管理</a></li> 
+              <!--<li><a href="settings/balance-payment.jsp" rel="pageTab" tabid="balance-payment">收支项目</a></li>
+               <li><a href="settings/staff-list.jsp" rel="pageTab" tabid="setting-staffList">职员管理</a></li> -->
+            </ul>
+          </div>
+          <div class="nav-item">
+          	<h3>辅助资料</h3>
+          	<ul class="sub-nav">
+          		<li><a href="settings/customer-category-list.jsp" rel="pageTab" tabid="setting-customerCategoryList" data-right="BUTYPE_QUERY">客户类别</a></li>
+          		<li><a href="settings/vendor-category-list.jsp" rel="pageTab" tabid="setting-vendorCategoryList">供应商类别</a></li>
+          		<li><a href="settings/goods-category-list.jsp" rel="pageTab" tabid="setting-goodsCategoryList">商品类别</a></li>
+          		<li><a href="settings/unit-list.jsp" rel="pageTab" tabid="setting-unitList" data-right="UNIT_QUERY">计量单位</a></li>
+          		<li><a href="settings/settlement-category-list.jsp" rel="pageTab" tabid="setting-settlementCL" data-right="Assist_QUERY">结算方式</a></li>
+          	</ul>
+          </div>
+          <div class="nav-item last">
+            <h3>高级设置</h3>
+            <ul class="sub-nav">
+              <li><a href="settings/system-parameter.jsp" rel="pageTab" tabid="setting-parameter">系统参数</a></li>
+              <li><a href="settings/authority.jsp" rel="pageTab" tabid="setting-authority">权限设置</a></li>
+              <li><a href="basedata/log.do?action=initLogList" rel="pageTab" tabid="setting-operationLog" data-right="OPERATE_QUERY">操作日志</a></li>
+              <li><a href="settings/print-templates.jsp" rel="pageTab" tabid="setting-printTemplates">套打模板</a></li>
+              <li><a href="settings/backup.jsp" rel="pageTab" tabid="setting-backup">备份与恢复</a></li>
+            </ul>
+          </div>
+          <b></b> </div>
+      </li>
+    </ul>
+    <!--<a href="#" class="side_fold">收起</a>--> 
+  </div>
+  <div id="col-main">
+    <div id="main-hd" class="cf">
+      <div class="tit"> <span class="company" id="companyName">进销存</span> <span class="period" id="period"></span> </div>
+      <ul class="user-menu">
+        
+        <li class="qq"><a href="" onClick="return false;" id="wpa">QQ咨询：290238838</a></li>
+      	<li class="space">|</li>
+      	<li class="telphone">电话：400-000-1234</li>
+        <li class="space">|</li>
+      	<li><a href="#" target="_blank" class="buy-now">购买</a></li>
+        <li class="space">|</li>
+        
+      	<li><a class="service-tab" data-tab="3">服务支持</a></li>
+        <li class="space">|</li>
+        <li><a href="javascript:void(0);" onClick="window.location.href='#';return false;">返回助手</a></li>
+        <li class="space">|</li>
+        <li id="yswb-tab"><a href="#" target="_blank">社区</a></li>
+        <li class="space">|</li>
+        <li><a href="#">帮助</a></li>
+        <li class="space">|</li>
+        <li><a href="#">退出</a></li>
+      </ul>
+    </div>
+    <div id="main-bd">
+      <div class="page-tab" id="page-tab"> 
+      </div>
+    </div>
+  </div>
+</div>
+<script src="js/bs/default.js"></script>
+
+<script type="text/javascript" src="http://wpa.b.qq.com/cgi/wpa.php"></script>
+<script type="text/javascript">BizQQWPA.addCustom({nameAccount: "4008300755",aty: "0",selector: "wpa"});</script>
+
+</body>
+</html>

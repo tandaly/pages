@@ -1,0 +1,37 @@
+html{_text-overflow:ellipsis;_background: #f5f5f5;}
+.mod-report{position: relative;*zoom: 1;padding:66px 0 0 18px;}
+.mod-report .search-wrap{position: fixed;left: 0;top: 0;width: 100%;_position:absolute;_left:expression(eval(document.documentElement.scrollLeft));_top:expression(eval(document.documentElement.scrollTop));background: #f5f5f5;}
+.mod-report .search-wrap .s-inner{padding: 18px;}
+.mod-report .search-wrap strong.tit{font-size:14px;line-height: 30px;}
+.mod-report .search-wrap .txt{display: inline-block;*display: inline;*zoom: 1;font-size: 14px;line-height: 30px;}
+
+.mod-report .grid-wrap:after{content: '.';display: block;clear: both;visibility: hidden;overflow: hidden;height: 0;}
+.mod-report .grid-wrap{*zoom: 1;}
+.mod-report .grid-wrap .grid{float: left;padding: 18px;border:1px solid #cfcfcf;background: #fff;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.mod-report .grid-wrap .H{font-size:24px;font-weight:bold;text-align: center;}
+.mod-report .grid-wrap .R{text-align: right;}
+.mod-report .grid-wrap .B{font-weight: bold;}
+.mod-report .grid-wrap table{border-collapse:collapse;}
+.mod-report .grid-wrap table.caption{margin-bottom: 5px;}
+.mod-report .grid-wrap table.list{border:1px solid #666;}
+.mod-report .grid-wrap table.list td{padding: 5px 5px;border:1px solid #666;}
+.mod-report .grid-wrap table.list thead td{text-align: center;font-weight: bold;}
+.link{ cursor:pointer; }
+.tr-hover{ background:#f8ff94;}
+
+#filter-menu .mod-choose-input{position: relative;*zoom: 1;}
+#filter-menu .mod-choose-input .ui-input{padding-right: 25px;width:226px; font-family:"宋体";}
+#filter-menu .ui-datepicker-input{width:105px; font-family:"宋体";}
+.ui-icon-ellipsis{ right:3px; }
+
+thead{word-break: keep-all;white-space:nowrap;}
+
+@media print{
+body{background: #fff;}
+.mod-report{padding: 0;}
+.mod-report .search-wrap{display: none;}
+.mod-report .grid-wrap .grid{float: none;padding: 0;border:none;background: none;box-shadow:none;}
+.mod-report .grid-wrap table.caption{margin-bottom: 0;}
+.mod-report .grid-wrap table.list{width:100%;}
+.mod-report .grid-wrap table.list td{padding: 1px;}
+}
